@@ -17,6 +17,8 @@ class Player(GameSprite):
             self.rect.y+=self.speed 
     def update(self):
         
+        
+        keys = key.get_pressed()
         if keys[K_LEFT] and self.rect.x > 5:
             self.rect.x-= self.speed
         if keys[K_RIGHT] and self.rect.x < 600:
@@ -25,50 +27,50 @@ class Player(GameSprite):
         
         if keys[K_DOWN] and self.rect.y < 400:
             self.rect.y+= self.speed
+        new_time=0
+        start_time=0
         if sprite.groupcollide(players,osts, False, False):
-        
-            if keys[K_UP] and ui == False:
-                if o == 2:
-                    clock = time.clock()
-                    start_time = time.time()
-                    cur_time = start_time
-                    new_time = time.time()
-                for i in range(2):
-                    self.rect.y-= self.speed 
-                    for i in range(1000):
-                        pass
-                self.pad()
-        elif sprite.spritecollide(player2,osts, False):
-            
-            if keys[K_UP] and ui==False:
+            if keys[K_UP] and new_time-start_time < 2 :
+                clock = time.clock()
+                start_time = time.time()
+                cur_time = start_time
                 
-                for i in range(2):
+                for i in range(20):
+                    #new_time = time.time()
                     self.rect.y-= self.speed 
-                    for i in range(1000):
-                        pass
-                self.pad()
-        elif keys[K_UP] and ui==False:
-                for i in range(2):
-                    self.rect.y-= self.speed 
-                    for i in range(1000):
-                        pass
+                new_time = time.time()
+                print(new_time-start_time)
         else:
             self.pad()
+        '''        
+        elif keys[K_UP] and new_time-start_time < 2:
+            clock = time.clock()
+            start_time = time.time()
+            cur_time = start_time
                 
-        
-        
+            for i in range(2):
+                
+                self.rect.y-= self.speed 
+            new_time = time.time()
+            print(new_time-start_time)
+        '''
+       
+class Ship(GameSprite):
+    def update(self):
+        self.rect.x+=self.speed
 
 #создай окно игры
-op = 'hero1.png'
-player = Player(40,40,op, 300, 150, 1)
+
+player = Player(40,40,'hero1.png', 300, 150, 1)
 xpl= player.rect.centerx
 ypl = player.rect.top
 player2 = Player(40,40, 'hero2.png',xpl, ypl, 1 )
+
 ost= GameSprite(130,70,'os.png', 300, 200, 4)
 ost1= GameSprite(130,70,'os.png', 100, 200, 4)
-sword= GameSprite(35,35,'sword.png', 340, 160, 4)
 hr1= GameSprite(40,40,'heart.png', 20, 20, 4)
 hr2= GameSprite(40,40,'heart.png', 60, 20, 4)
+ship=Ship(200,400,'ship.png', -1000, 70, 1)
 hr3= GameSprite(40,40,'heart.png', 100, 20, 4)
 window = display.set_mode((700,500))
 
@@ -77,8 +79,6 @@ y1=300
 x2=100
 y2=200
 display.set_caption('test')
-swords=sprite.Group()
-swords.add(sword)
 players=sprite.Group()
 players.add(player)
 osts=sprite.Group()
@@ -90,12 +90,12 @@ hrs.add(hr2)
 hrs.add(hr3)
 background = transform.scale(image.load('images.png'), (700,500))
 #window.blit(background, (0,0))
-clock = time.clock()
+#clock = time.Clock()
 FPS = 120
 jp= False
 game = True
-start_time = time.time()
-cur_time = start_time
+#start_time = time.time()
+#cur_time = start_time
 while game:
 
     window.blit(background, (0,0))
@@ -104,13 +104,10 @@ while game:
         if e.type == QUIT:
             game = False
     #время
-    new_time = time.time()
-    print(new_time-start_time)
-    if sprite.spritecollide(player,swords, False):
-        op = 'hero2.png'
-        sword.kill()
-        jp = True
-
+    #new_time = time.time()
+    #print(new_time-start_time)
+    if sprite.spritecollide(ship,players, True):
+        game = False
     if jp == True:
         player2.reset()
         player2.update()
@@ -120,12 +117,12 @@ while game:
     
     ost.reset()
     #отображать сворд как группу
-    swords.update()
-    swords.draw(window)
+    
     ost1.reset()
     hrs.update()
     hrs.draw(window)
-
+    ship.update()
+    ship.reset()
     players.update()
     players.draw(window)
     display.update()
